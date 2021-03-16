@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/P_SAW.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+        function post_page(){
+               history.go(-1);
+        }
+    $(document).ready(function(){
+        $("#popup").click(function(){
+            $("#hide").toggle();
+        });
+        $("#close").click(function(){
+            $("#hide").toggle();
+        });
+        $(".MAT_CD").click(function(obj){
+            if(confirm(obj.target.innerText+'를 선택하시겠습니까?')){
+                $("#MAT_CD_hidden_값").val(obj.target.innerText);
+                $("#MAT_CD_hidden_코드값").val(obj.target.children[0].value);
+
+                $("#MAT_LOT_NO_div").show();
+                $("#MAT_LOT_NO_input").focus();
+            }
+        });
+        $("#MAT_LOT_NO_input").keydown(function (key) {
+            if(key.keyCode == 13){
+                if($("#MAT_LOT_NO_input").val() != ''){
+                    $("#자재_list").append($("<div class='자재_list_data'>\
+                    <div class='mat_cd_div' style='width:60%; height:30px; float:left;'>\
+                        <div style='width:40%; height:30px; float:left;' class='span_div'>자재코드:</div>\
+                            <input type='text' style='width:60%; height:30px; float:left;' class='MAT_CD_class' value="+ $("#MAT_CD_hidden_값").val()+" readonly>\
+                            <input type='hidden' style='width:60%; height:30px; float:left;' class='MAT_CD_Code_class' value="+ $("#MAT_CD_hidden_코드값").val()+" readonly>\
+                         </div>\
+                    <div class='mat_lot_no_div' style='width:40%; height:30px; float:left;'>\
+                        <div style='width:60%; height:30px; float:left;' class='span_div'>LOT_NO:</div>\
+                            <input type='text' style='width:40%; height:30px; float:left;' class='MAT_LOT_NO_class' value="+$("#MAT_LOT_NO_input").val()+" readonly>"+"\
+                        </div>\
+                    </div>"));
+                    $("#MAT_LOT_NO_input").val('');
+                    $("#MAT_LOT_NO_div").hide();
+                    $("#hide").hide();
+                }else{
+                    alert('LOT NO를 확인해주세요.');
+                }
+            }
+        });
+        $("#move_start_id").click(function(){
+
+            if(document.getElementsByClassName('MAT_CD_class').length > 0){
+                //   자재코드 등록            
+                for(var i =0; i<document.getElementsByClassName('MAT_CD_class').length; i++){        
+
+                    $.ajax({                                
+                            url : 'mat_insert',
+                            data: {'lot_no':$('#LOT_NO').val(), 
+                                    'emp_no':$('#EMP_NO').val(),
+                                    'mat_cd':document.getElementsByClassName('MAT_CD_Code_class')[i].value, 
+                                    'mat_lot_no':document.getElementsByClassName('MAT_LOT_NO_class')[i].value,
+                                    'item_cd':$('#ITEM_CD').val(), 
+                                    'pra_cd':$('#PRA_CD').val(),
+                                    'lot_cnt':$('#LOT_CNT').val()},
+                                    success:function(data){                                            
+                                        //alert('사용 자재 등록이 정상적으로 완료되었습니다.')
+                                    },
+                                    error:function(error){                                                                                
+                                        alert('1.Ajax Error...');
+                                        return false;
+                                    }
+                            });
+
+                    }
+            }
+            $.ajax({ url : 'lot_start_insert',
+                    data: {'lot_no':$('#LOT_NO').val(), 
+                            'emp_no':$('#EMP_NO').val(),
+                            'mcn_no':$('#MCN_NO').val()},
+                            success:function(data){                                            
+                                alert('LOT START 정보가 정상적으로 등록되었습니다.')
+                                location.href='movein_1'
+                            },
+                            error:function(error){                                                                                
+                                alert('2.Ajax Error...');
+                                return false;
+                            }
+                    });
+        });        
+    });
+
+</script>
+</head>
+<body>
+    <input type="text" id="Total_불량수">
+    <button id="popup" type="button" class="btn btn-secondary">자재추가하기</button>
+
+    <div id="hide">
+        <button id="close" type="button">
+            x
+        </button>
+        <div id="notice_box">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                    <th scope="col">PRA_CD</th>
+                    <th scope="col">자재</th>
+                    <th scope="col">자재코드</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>A010</td>
+                      <td>BLADE</td>                      
+                      <td class="MAT_CD" >27HDDD[HDDD1082]<input type="hidden" class="MAT_CD_input" value="C025200003"></td>
+                    </tr>
+                    <tr>
+                        <td>A010</td>
+                        <td>BLADE</td>                      
+                        <td class="MAT_CD" >SD-3000-N1-110[BA] T15<input type="hidden" class="MAT_CD_input" value="C025200010"></td>
+                      </tr>
+                      <tr>
+                        <td>A010</td>
+                        <td>BLADE</td>                      
+                        <td class="MAT_CD" >SD-3000-N1-110[BA] T16<input type="hidden" class="MAT_CD_input" value="C025200011"></td>
+                      </tr>
+                      <tr>
+                        <td>A010</td>
+                        <td>BLADE</td>                      
+                        <td class="MAT_CD" >SD-3000-N1-110[BA] T17<input type="hidden" class="MAT_CD_input" value="C025200012"></td>
+                      </tr>
+                      <tr>
+                        <td>A010</td>
+                        <td>BLADE</td>                      
+                        <td class="MAT_CD" >SD-3000-N1-110[BA] T18<input type="hidden" class="MAT_CD_input" value="C025200013"></td>
+                      </tr>
+                      <tr>
+                        <td>A010</td>
+                        <td>BLADE</td>                      
+                        <td class="MAT_CD" >SD3000-N1-110-A2342 BB<input type="hidden" class="MAT_CD_input" value="C025200005"></td>
+                      </tr>
+                      <tr>
+                        <td>A010</td>
+                        <td>BLADE</td>                      
+                        <td class="MAT_CD" >SD4000-N1-50-A2342 DD<input type="hidden" class="MAT_CD_input" value="C025200009"></td>
+                      </tr>
+                      <tr>
+                        <td>A010</td>
+                        <td>BLADE</td>                      
+                        <td class="MAT_CD" >ZH05-SD2000-N1-50 CE<input type="hidden" class="MAT_CD_input" value="C025200016"></td>
+                      </tr>                      
+                  </tbody>
+                </table>
+            <div id="MAT_LOT_NO_div">
+                <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">LOT_NO</span>
+                </div>
+                <input type="text" class="form-control" id="MAT_LOT_NO_input" name="MAT_LOT_NO">
+                    <input type="hidden" id="MAT_CD_hidden_값">
+                    <input type="hidden" id="MAT_CD_hidden_코드값">
+                    <input type="hidden" value="{{EMP_NO}}" id="EMP_NO">
+                    <input type="hidden" value="{{LOT_NO}}" id="LOT_NO">
+                    <input type="hidden" value="{{ITEM_CD}}" id="ITEM_CD">
+                    <input type="hidden" value="{{PRA_CD}}" id="PRA_CD">
+                    <input type="hidden" value="{{LOT_CNT}}" id="LOT_CNT">
+                    <input type="hidden" value="{{MCN_NO}}" id="MCN_NO">
+            </div>
+            </div>
+        </div>
+    </div>
+    <div id="자재_list">
+
+    </div>
+    <div id="버튼그룹_div">
+        <div id="이전버튼_div">
+            <button type="button" class="btn btn-outline-dark" onclick="post_page();" id="이전버튼">이전</button>
+        </div>
+        <div id="제출버튼_div">
+            <!-- <button type="button" class="btn btn-outline-dark" onclick="location.href='confirm'" id="제출버튼" >제출</button> -->
+            <input type="button" value="MOVE START" class="btn btn-outline-dark" id="move_start_id">
+        </div>
+    </div>
+</body>
+</html>

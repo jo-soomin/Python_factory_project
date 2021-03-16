@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/movein_2.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+    function post_page(){
+        history.go(-1);
+    }
+    $(document).ready(function(){        
+        $("#MAT_CD_id").focus();
+          $("#MAT_CD_id").keydown(function (key) {
+            if(key.keyCode == 13){
+                var lot = document.getElementById('MAT_CD_id').value
+                var cnt = 0
+                 for(var i =0; i<document.getElementsByClassName('MAT_CD').length; i++){
+                    if(document.getElementById("MAT_CD_id").value == document.getElementsByClassName("MAT_CD")[i].value){
+                        cnt = cnt + 1;
+                    }
+                 }
+                 if(cnt >= 1){
+                    $("#MAT_LOT_NO_id").attr('disabled', false);
+                    $("#MAT_LOT_NO_id").focus();
+                 }else{
+                    alert('자재코드를 확인해주세요.');
+                    $("#MAT_CD_id").focus();
+                    $("#MAT_LOT_NO_id").attr('disabled', true);
+                 }
+            }
+          });
+          $("#MAT_LOT_NO_id").keydown(function (key) {
+            if(key.keyCode == 13){
+                if(document.getElementById('MAT_LOT_NO_id').value != '' && document.getElementById('MAT_LOT_NO_id').value != 0){
+                    // alert(document.getElementById('MAT_CD_id').value)
+                    // alert(document.getElementById('MAT_LOT_NO_id').value)
+
+                    $("#자재_list").append($("<div class='자재_list_data'>"+"<div class='mat_cd' style='float:left; width:50%;'>"+document.getElementById('MAT_CD_id').value+"</div><div class='mat_lot_no' style='float:left; width:50%;'>"+document.getElementById('MAT_LOT_NO_id').value+"</div></div>"));
+                    $("#MAT_CD_id").val('');
+                    $("#MAT_CD_id").focus();
+                    $("#MAT_LOT_NO_id").val('');
+                    $("#MAT_LOT_NO_id").attr('disabled', true);
+
+                }else{
+                    alert('자재 LOT_NO를 입력해주세요.')
+                }
+            }
+          });
+          $("#move_start_id").click(function(){
+              //자재코드 등록              
+              for(var i =0; i<document.getElementsByClassName('mat_cd').length; i++){                
+                  $.ajax({                                
+                        url : 'mat_insert',
+                        data: {'lot_no':$('#LOT_NO').val(), 
+                                'emp_no':$('#EMP_NO').val(),
+                                'mat_cd':document.getElementsByClassName('mat_cd')[i].innerText, 
+                                'mat_lot_no':document.getElementsByClassName('mat_lot_no')[i].innerText,
+                                'item_cd':$('#ITEM_CD').val(), 
+                                'pra_cd':$('#PRA_CD').val(),
+                                'lot_cnt':$('#LOT_CNT').val()},
+                                success:function(data){                                            
+                                    //alert('사용 자재 등록이 정상적으로 완료되었습니다.')                                    
+                                },
+                                error:function(error){                                                                                
+                                    alert('Ajax Error...');
+                                    return false;
+                                }
+                        });
+
+                }
+
+                $.ajax({                                
+                        url : 'lot_start_insert',
+                        data: {'lot_no':$('#LOT_NO').val(), 
+                                'emp_no':$('#EMP_NO').val()},
+                                success:function(data){                                            
+                                    alert('LOT START 정보가 정상적으로 등록되었습니다.')
+                                    location.href='movein_1'
+                                },
+                                error:function(error){                                                                                
+                                    alert('Ajax Error...');
+                                    return false;
+                                }
+                        });
+          });
+        
+    });
+
+
+</script>
+</head>
+<body>
+        {% csrf_token %}
+        <div id="content">
+            <table class="table table-bordered">
+            <tr>
+                <th scope="col">GUBUN</th>
+                <th scope="col">CMP_NM</th>
+                <th scope="col">MAT_DESC</th>
+            </tr>
+            {% for data in data %}
+            <tr>
+                <td>
+                    {{data.GUBUN}}
+                </td>
+                <td>
+                    {{data.CMP_NM}}
+                </td>
+                <td>
+                    {{data.MAT_DESC}}
+                </td>
+                    <input type="hidden"value="{{data.MAT_CD}}" class="MAT_CD">
+            </tr>
+            {% endfor %}
+            </table>
+        </div>
+        <div id="입력div">
+            <div class="input-group flex-nowrap">
+                <div class="input-group-prepend">
+                <span class="input-group-text" id="addon-wrapping">입력</span>
+            </div>
+            <input type="text" class="form-control" placeholder="자재코드를 입력해주세요." aria-describedby="addon-wrapping" id="MAT_CD_id" name="MAT_CD_name ">
+             <input type="hidden" value="{{EMP_NO}}" id="EMP_NO">
+             <input type="hidden" value="{{LOT_NO}}" id="LOT_NO">
+             <input type="hidden" value="{{ITEM_CD}}" id="ITEM_CD">
+             <input type="hidden" value="{{PRA_CD}}" id="PRA_CD">
+             <input type="hidden" value="{{LOT_CNT}}" id="LOT_CNT">
+        </div>
+            <div class="input-group flex-nowrap">
+                <div class="input-group-prepend">
+                <span class="input-group-text" id="addon-wrapping1">입력</span>
+            </div>
+            <input type="text" class="form-control" placeholder="자재 LOT_NO를 입력해주세요." aria-describedby="addon-wrapping1" id="MAT_LOT_NO_id" disabled>
+        </div>
+        </div>
+        <div id="자재_list">
+
+        </div>
+
+        <div id="이전버튼">
+                <input type="button" value="post" class="btn btn-outline-dark" onclick="post_page();">
+                <input type="button" value="MOVE START" class="btn btn-outline-dark" id="move_start_id">
+        </div>
+</body>
+</html>

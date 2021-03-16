@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+    document.getElementById('LOT_NO').focus();
+         $('#LOT_NO').keydown(function (key) {
+            if(key.keyCode == 13){
+                var LOT_NO = document.getElementById('LOT_NO').value
+                var ls_emp_no = '20060404'
+                $.ajax({
+                        url : 'lot_result',
+                        data: {'LOT_NO':LOT_NO},                        
+                        success:function(data){                           
+                            if(data==null){
+                                alert('lot_no를 확인해주세요.');
+                                document.getElementById('LOT_NO').focus();
+                            }else{                                
+                                var ls_bsn_cd = data[0]
+                                var ls_pra_cd = data[1]
+                                var ls_cmp_cd = data[2]
+                                var ls_run_no = data[3]
+                                var ls_die_no = data[4]
+                                var ls_part_no = data[5]
+                                var ls_item_cd = data[6]
+                                var ls_rut_cd = data[7]
+                                var ls_lot_no = data[8]
+                                var ls_trans_cnt = data[9]
+                                var ls_curr_qty = data[10]
+                                var ls_status = data[11]
+                                var ls_site_no = data[12]
+                                var ls_lot_type = data[13]
+                                var ls_plan_week = data[14]
+                                var ls_test_week = data[15]
+                                var ls_carr_no = data[16]
+                                var ls_label_yn = data[17]
+                                var ls_hold_yn = data[18]
+                                var ls_mcn_cd = data[19]
+                                var ls_start_dt = data[20]
+                                var ls_act_dt = data[21]
+                                var ls_clot_no = data[22]
+                                var ls_smark = data[23]
+                                var ls_test_yn = data[24]
+                                var ls_item_mcd = data[25]
+                                var ls_chlgo_cmp = data[26]
+                                var ls_mat_yn = data[27]
+                                var ls_sysdate = data[28]
+
+                                $('#content').show();
+                                $('#data1').val(ls_lot_no);
+                                $('#data2').val(ls_clot_no);
+                                $('#data3').val(ls_pra_cd);
+                                $('#data4').val(ls_curr_qty);
+                                
+                                $.ajax({                                
+                                url : 'er_return_chk',
+                                data: {'ls_item_cd':ls_item_cd},
+                                        success:function(data){                                            
+                                            var ls_item_wf_rt = data[0]
+                                            var ls_item_type = data[1]
+
+                                            if(ls_item_wf_rt =='Y' & ls_item_type == 'RB02' & ls_pra_cd =='A005'){
+                                                
+                                                var ls_return_yn = confirm("Wafer Return 하셨습니까?");
+
+                                                alert(ls_return_yn)
+
+                                                $.ajax({                                
+                                                url : 'er_return_update',
+                                                data: {'return_yn':ls_return_yn, 
+                                                        'date':ls_sysdate,
+                                                        'emp_no' :ls_emp_no,
+                                                        'lot_no' :ls_lot_no},
+                                                        success:function(data){                                            
+                                                            var ls_item_wf_rt = data[0]
+                                                            var ls_item_type = data[1]
+                                                        },
+                                                        error:function(error){
+                                                            alert('E.R Return Wafer Ajax Error.');
+                                                        }
+                                                });
+                                                
+                                            }
+                                        },
+                                        error:function(error){
+                                            alert('품목코드를 조회할 수 없습니다.');
+                                        }
+                                });
+                                
+                                
+                            }
+                            
+                            
+
+                            
+
+                        },
+                        error:function(error){
+                            alert('lot_no를 확인해주세요.');
+                            document.getElementById('LOT_NO').focus();
+                        }
+                });
+
+            }
+         });
+    });
+</script>
+<body>
+    <div>
+        <input id="LOT_NO">
+    </div>
+    <div id="content" style="height:300px; display:none;" >
+        <input type="text" id="data1">
+        <input type="text" id="data2">
+        <input type="text" id="data3">
+        <input type="text" id="data4">
+    </div>
+
+</body>
+</html>

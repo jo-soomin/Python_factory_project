@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/ccs.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function(){
+         $(".ibmburger").click(function(){
+            $("#submenu").toggle();
+        });
+        var burgerMenu = document.querySelector(".ibmburger");
+        burgerMenu.onclick = function() {
+            if (burgerMenu.classList.contains("close")) {
+                document.getElementById("close-menu").beginElement();
+                burgerMenu.classList.remove("close");
+            }else {
+                document.getElementById("open-menu").beginElement();
+                burgerMenu.classList.add("close");
+            }
+        }
+
+          var ls_pra_cd;
+        
+        $('#emp_no').focus(); 
+        $('#save_btn').hide();
+
+        $('#emp_no').keydown(function (key) {
+             if(key.keyCode == 13){  
+                $('#lot_no').focus(); 
+             }
+        });
+     
+        $('#lot_no').keydown(function (key) {
+             if(key.keyCode == 13){  
+                $.ajax({
+                            url : 'ccsInformation',
+                            data: {'lot_no' :document.getElementById('lot_no').value},
+                            success:function(data){
+                                 document.getElementById('sale_cd').value = data[0]
+                                // document.getElementById('lot_no').value = data[1]
+
+                                var ls_sale_cd = data[0]
+                                    ls_pra_cd  = data[2]
+                                
+                                alert(ls_pra_cd + '  공정 LOT 입니다.')                                   
+                                 
+                                var date = new Date();
+                                var year = date.getFullYear();
+                                var month = date.getMonth()+1;
+                                var day = date.getDate();
+                                var hour = date.getHours();
+                                var minutes = date.getMinutes();
+                                var seconds = date.getSeconds();
+                            
+                                document.getElementById('now_dt').value = year + "년" + month + "월" + day + "일" + hour + "시" + minutes + "분" + seconds + "초";
+
+                                $('#mcn_cd').focus(); 
+
+                            },
+                            error:function(error)
+                            {                                    
+                                alert("데이터없음.")
+                            }
+                        });
+             }            
+        });
+
+       $("#start_btn").click(function(obj){                
+                $.ajax({
+                    url : 'ccsContent',
+                    success:function(data)
+                    {                       
+                        
+                        for (var i =0; i<data.length; i++)
+                        {
+                            document.getElementById('질문_'+i).innerHTML = data[i].SHEET_NM
+                            document.getElementById('힌트_'+i).placeholder = data[i].SHEET_HINT
+                        }
+
+                        var ls_sale_cd = document.getElementById('sale_cd').value 
+                        
+                        if(document.getElementById('emp_no').value =='')
+                        {                                                                                                                          
+                            alert('사원번호 입력 후 다시 작성해주세요.');
+                            return false;
+                        }
+
+                        if(ls_sale_cd =='')
+                        {                                                                                                                          
+                            alert('LOT NO 조회 후 다시 작성해주세요.');
+                            return false;
+                        }                      
+
+                        date = new Date();
+                        year = date.getFullYear();
+                        month = date.getMonth()+1;
+                        day = date.getDate();
+                        hour = date.getHours();
+                        minutes = date.getMinutes();
+                        seconds = date.getSeconds();
+                                                
+                        // $.ajax({
+                        //     url : 'ccsNewNO',
+                        //     success:function(data)
+                        //     {      
+                        //         var ls_ccs_seq = data[0].toString().padStart(4, '0');                                
+                                
+                        //         var ls_new_ccs_no = "C"  + year + ("00" + month).slice(-2) + ("00" + day).slice(-2) + ls_ccs_seq ;
+                                
+                        //         $.ajax({
+                        //             url : 'ccsglobalno',
+                        //             data: { 'ccs_no'  :ls_new_ccs_no }
+                        //         });
+                                
+                        //     },
+                        //     error:function(error)
+                        //     {
+                        //         alert("데이터없음.")
+                        //     }
+                        // });  
+
+                        var ls_mcn_cd = document.getElementById('mcn_cd').value ;
+
+                        if(ls_mcn_cd == '')
+                        {                                                                                                                          
+                            alert('설비 번호를 입력해주세요.');
+                            return false;
+                        }
+                        
+                        if(ls_mcn_cd.length !== 5)
+                        {                                                                                                                          
+                            alert('설비 번호 자릿수를 확인 해주세요.');
+                            return false;
+                        }         
+
+                        $('.content_div').show();
+                        $('#start_btn').hide();
+                        $('#save_btn').show();       
+                       
+                        ls_sys_dt_sub = "S" + year + ("00" + month).slice(-2) + ("00" + day).slice(-2) +  ("00" + hour).slice(-2) + ("00" + minutes).slice(-2) + ("00" + seconds).slice(-2) ;                                                
+                        ls_sys_dt = ls_sys_dt_sub.substr(1,14) ;
+                    
+                        $.ajax({
+                            url : 'ccs_mas_Insert',
+                            data: { 'emp_no'  :document.getElementById('emp_no').value,
+                                    'lot_no'  :document.getElementById('lot_no').value,
+                                    'mcn_cd'  :ls_mcn_cd.toUpperCase(),
+                                    'sale_cd' :document.getElementById('sale_cd').value,
+                                    'sysdt'   :ls_sys_dt,
+                                    'pra_cd'  :ls_pra_cd,
+                                    'request_cd' :document.getElementById('ddlb_request').value
+                                  },
+                            success:function(data)
+                            {       
+                                // var ls_mcn_cd = document.getElementById('mcn_cd').value ;
+                                // if(data != ''){
+                                //     alert(data[0].error_code + ":"+ data[0].error_message);
+                                // }
+                                // $.ajax({
+                                //     url : 'ccs_dtl_Insert',
+                                //     data: { 'mcn_cd'  :ls_mcn_cd.toUpperCase(),                                                
+                                //             'sysdt'   :ls_sys_dt,
+                                //             'pra_cd'  :ls_pra_cd
+                                //             },
+                                //     success:function(data)
+                                //     {      
+                                //         alert("작성을 시작해주세요.")
+
+                                //     },
+                                //     error:function(error)
+                                //     {
+                                //         alert("데이터 입력 중 오류입니다.")
+                                //         window.location.reload();                                                                                
+                                //     }
+                                // });                                  
+                                alert("작성을 시작해주세요.")        
+
+                            },
+                            error:function(error)
+                            {                                  
+                                alert("데이터 입력 중 오류입니다. 재시작 해주세요.")                                
+                            } 
+                        });
+
+                    },
+                    error:function(error){
+                        alert("데이터 입력 중 오류입니다. 재시작 해주세요.")
+                    }
+                });
+            
+       //      $('.information_div').hide();
+       });
+       $("#항목1").click(function(obj){
+            $("#List_ul_1").slideToggle('2000');
+       });
+       $("#항목2").click(function(obj){
+            $("#List_ul_2").slideToggle('2000');
+       });
+       $("#항목3").click(function(obj){
+            $("#List_ul_3").slideToggle('2000');
+       });      
+
+       $("#저장").click(function(obj){
+
+            var ls_save_yn = confirm("저장하시겠습니까?");
+
+            if(ls_save_yn == true){  
+
+                var arr = new Array();
+
+                for(var i=0; i<100; i++){
+                    arr[i] = '';
+                }
+                
+                arr[0] = document.getElementsByName('saw_ccs_v_001')[0].value ;
+                arr[1] = $('input[name="saw_ccs_v_002"]:checked').val(); 
+
+                arr[5] = document.getElementsByName('saw_ccs_v_003')[0].value ;
+
+                arr[10] = document.getElementsByName('saw_ccs_v_005')[0].value ;
+                arr[11] = $('input[name="saw_ccs_v_004"]:checked').val(); 
+
+                arr[15] = $('input[name="saw_ccs_v_006"]:checked').val(); 
+
+                arr[20] = document.getElementsByName('saw_ccs_v_008')[0].value ;
+                arr[21] = $('input[name="saw_ccs_v_009"]:checked').val(); 
+
+                arr[25] = $('input[name="saw_ccs_v_011"]:checked').val(); 
+
+                arr[30] = document.getElementsByName('saw_ccs_v_013')[0].value ;
+                arr[31] = $('input[name="saw_ccs_v_014"]:checked').val(); 
+
+                arr[35] = document.getElementsByName('saw_ccs_v_016')[0].value ;
+                arr[36] = $('input[name="saw_ccs_v_017"]:checked').val(); 
+
+                arr[40] = $('input[name="saw_ccs_v_019"]:checked').val(); 
+
+                arr[45] = document.getElementsByName('saw_ccs_v_021')[0].value ;
+                arr[46] = $('input[name="saw_ccs_v_022"]:checked').val(); 
+
+                arr[50] = document.getElementsByName('saw_ccs_v_024')[0].value ;
+                arr[51] = $('input[name="saw_ccs_v_025"]:checked').val(); 
+
+                arr[55] = document.getElementsByName('saw_ccs_v_027')[0].value ;
+                arr[56] = document.getElementsByName('saw_ccs_v_028')[0].value ;
+                arr[57] = $('input[name="saw_ccs_v_029"]:checked').val(); 
+                
+                arr[60] = document.getElementsByName('saw_ccs_v_030')[0].value ;
+                arr[61] = document.getElementsByName('saw_ccs_v_031')[0].value ;
+                arr[62] = $('input[name="saw_ccs_v_032"]:checked').val(); 
+
+                arr[65] = $('input[name="saw_ccs_v_033"]:checked').val(); 
+
+                arr[70] = document.getElementsByName('saw_ccs_v_034')[0].value ;
+                arr[71] = document.getElementsByName('saw_ccs_v_035')[0].value ;
+                arr[72] = $('input[name="saw_ccs_v_036"]:checked').val(); 
+
+        
+                $.ajax({
+                    url : 'ccs_value_arr',
+                    traditional: true,
+                    data: { 'arr':arr
+                            },
+                    success:function(data)
+                    {                       
+                        alert("저장 완료하였습니다.")
+                        window.location.reload();
+                    },
+                    error:function(error)
+                    {
+                        alert("데이터 입력 중 오류입니다. 재시작 해주세요.")
+                    }
+                });      
+            };
+       }); 
+
+    });
+</script>
+<svg class="ibmburger" id="svg-all" width="50" height="50" viewbox="-50 0 200 200">
+  <path id="top-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,70 C 50,70 50,70 100,70">
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,70 C 50,70 50,70 100,70"
+      to="M 0,100 C 0,34.3 100,34.3 100,100"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="open-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,100 C 0,34.3 100,34.3 100,100"
+      to="M 0,70 C 50,70 50,70 100,70"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="close-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+  <path id="bot-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,130 C 50,130 50,130 100,130">
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,130 C 50,130 50,130 100,130"
+      to="M 0,100 C 0,165.7 100,165.7 100,100"
+      dur="250ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,100 C 0,165.7 100,165.7 100,100"
+      to="M 0,130 C 50,130 50,130 100,130"
+      dur="250ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-1" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+      <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-2" fill="transparent" stroke="#ffffff" stroke-width="0" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="0"
+      to="8"
+      dur="1ms"
+      begin="open-menu.begin + 99ms"
+      fill="freeze"></animate>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="-45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="-45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="8"
+      to="0"
+      dur="1ms"
+      begin="close-menu.begin + 150ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+</svg>
+    <div id="title">
+        CCS
+    </div>
+<body>
+    <div id="submenu">
+        <div id="hoverlist">
+            <ul>
+                  <li><a href="movein_1">movein</a></li>
+                 <li><a href="moveout">moveout</a></li>
+                <li><a href="ccs">ccs</a></li>
+            </ul>
+        </div>
+    </div>
+        <input type="hidden" id="ccs_no" >
+
+    <div class="main_div">
+      
+       <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">의뢰일시 :</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" id="now_dt" readonly>
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">DEVICE :</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" id="sale_cd" readonly>
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">사원번호 :</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" id="emp_no" placeholder="사번을 입력해주세요.">
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">LOT NO :</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" id="lot_no" placeholder="LOT를 입력해주세요.">
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">설비번호 :</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" style="text-transform : uppercase;" id="mcn_cd" placeholder="설비를 입력해주세요.">
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm" style="width: 100%;">의뢰사유</span>
+            </div>
+            <div >
+                <select class="form-control" name='mcn_cd' onfocus='this.size=4;' onblur='this.size=1;' onchange='this.size=1; this.blur();' style="width: 100%;" id="ddlb_request" >
+                    <option value="*">선택</option>
+                    <option value="EO01">DEVICE 변경</option>
+                    <option value="EO02">CHUCK 교체</option>
+                    <option value="EO03">LAY OUT 변경</option>
+                    <option value="EO04">BLADE 교체( 수명 )</option>
+                    <option value="EO05">BLADE 교체( BROKEN )</option>
+                    <option value="EO06">BLADE 교체( TYPE )</option>
+                    <option value="EO07">BLADE 교체( Kerf 두꺼움 )</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="next_btn_div">
+            <button type="button" class="btn btn-outline-dark" id="start_btn">작성시작</button>
+        </div>
+
+        <div class="content_div">
+            <div id="항목1" style="font-weight: bold;"> 1. 점검항목 </div>
+            <ol class = "list" id="List_ul_1">
+                <li>
+                    <div class="question_text">
+                        <span id="질문_0"  ></span>
+                    </div>
+                    <div class="answer_text">
+                        <select name="saw_ccs_v_001" id="힌트_0" class="form-control" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+                            <option value="*">선택</option>
+                            <option value="27HDDD">27HDDD</option>
+                            <option value="SD3000BA">SD3000BA</option>
+                            <option value="SD3000BB">SD3000BB</option>
+                            <option value="SD4000DD">SD4000DD</option>
+                        </select>
+                        <label><input type="radio" name="saw_ccs_v_002" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_002" value="N"   > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_1"></span>
+                    <input id="힌트_1" class="힌트_input" name="saw_ccs_v_003">
+                </li>
+                <li>
+                    <span id="질문_2"></span>
+                    <div class="answer_text">
+                        <input id="힌트_2" class="힌트_input2" name="saw_ccs_v_005">
+                        <label><input type="radio" name="saw_ccs_v_004" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_004" value="N"  > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_3"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_3" type="text" value="" disabled="disabled" name="saw_ccs_v_005" />
+                    </div>
+                    <div>
+                        <label><input type="radio" name="saw_ccs_v_006" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_006" value="N"   > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_4"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_4" type="text" value="" disabled="disabled" name="saw_ccs_v_007" />
+                    </div>
+                    <div>
+                        <input class="힌트_input2" name="saw_ccs_v_008">
+                        <label><input type="radio" name="saw_ccs_v_009" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_009" value="N"   > 불일치</label>
+                    </div>
+                </li>
+            </ol>
+
+            <div id="항목2" style="font-weight: bold;"> 2. 점검항목</div>
+            <ol class="List_ol_display_none" id="List_ul_2" >
+                <li>
+                    <span id="질문_5"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_5" type="text" value="" disabled="disabled" name="saw_ccs_v_010" />
+                    </div>
+                     <div>
+                        <label><input type="radio" name="saw_ccs_v_011" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_011" value="N"   > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_6"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_6" type="text" value="" disabled="disabled" name="saw_ccs_v_012" />
+                    </div>
+                    <div>
+                        <input class="힌트_input2" name="saw_ccs_v_013">
+                        <label><input type="radio" name="saw_ccs_v_014" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_014" value="N"  > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_7"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_7" type="text" value="" disabled="disabled" name="saw_ccs_v_015" />
+                    </div>
+                    <div>
+                        <input class="힌트_input2" name="saw_ccs_v_016">
+                        <label><input type="radio" name="saw_ccs_v_017" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_017" value="N"   > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_8"></span>
+                    <div class="hint_text2">
+                        <input class="question_text2"  id="힌트_8" type="text" value="" disabled="disabled" name="saw_ccs_v_018" />
+                    </div>
+                    <div>
+                        <label><input type="radio" name="saw_ccs_v_019" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_019" value="N"   > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_9"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_9" type="text" value="" disabled="disabled" name="saw_ccs_v_020" />
+                    </div>
+                    <div>
+                        <input class="힌트_input2" name="saw_ccs_v_021">
+                        <label><input type="radio" name="saw_ccs_v_022" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_022" value="N"   > 불일치</label>
+                    </div>
+                </li>
+            </ol>
+
+            <div id="항목3" style="font-weight: bold;"> 3. 점검항목</div>
+            <ol class="List_ol_display_none" id="List_ul_3" >
+                <li>
+                    <span id="질문_10"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_10" type="text" value="" disabled="disabled" name="saw_ccs_v_023" />
+                    </div>
+                    <div>
+                        <input class="힌트_input2" name="saw_ccs_v_024">
+                        <label><input type="radio" name="saw_ccs_v_025" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_025" value="N"  > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_11"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_11" type="text" value="" disabled="disabled" name="saw_ccs_v_026" />
+                    </div>
+                    <div>
+                        <input class="힌트_input3" name="saw_ccs_v_027">
+                        <input class="힌트_input3" name="saw_ccs_v_028">
+                        <label><input type="radio" name="saw_ccs_v_029" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_029" value="N"  > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_12"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_12" type="text" value="" disabled="disabled" name="saw_ccs_v" />
+                    </div>
+                    <div>
+                        <input class="힌트_input3" name="saw_ccs_v_030">
+                        <input class="힌트_input3" name="saw_ccs_v_031">
+                        <label><input type="radio" name="saw_ccs_v_032" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_032" value="N"   > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_13"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_13" type="text" value="" disabled="disabled" name="saw_ccs_v" />
+                    </div>
+                     <div>
+                        <label><input type="radio" name="saw_ccs_v_033" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_033" value="N"   > 불일치</label>
+                    </div>
+                </li>
+                <li>
+                    <span id="질문_14"></span>
+                    <div class="hint_text">
+                        <input class="question_text"  id="힌트_14" type="text" value="" disabled="disabled" name="saw_ccs_v" />
+                    </div>
+                    <div>
+                        <input class="힌트_input3" name="saw_ccs_v_034">
+                        <input class="힌트_input3" name="saw_ccs_v_035">
+                        <label><input type="radio" name="saw_ccs_v_036" value="Y" checked="checked"> 일치 </label>
+                        <label><input type="radio" name="saw_ccs_v_036" value="N"  > 불일치</label>
+                    </div>
+                </li>
+            </ol>
+
+        </div>
+        <br>
+        <div id='save_btn'>            
+            <!-- <button type="button" class="btn btn-outline-dark" onclick="location.href='confirm'" id="저장" >저장</button> -->
+            <button type="submit" id="저장">저장</button>
+        </div>   
+      </div>               
+</body>
+</html>

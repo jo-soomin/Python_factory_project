@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+         $(document).ready(function(){
+           $('#createBtn').click(function(){
+
+              var m_title = $('#m_title').val();
+              var m_director =  $('#m_director').val();
+              var m_genre = $('#m_genre').val();
+              var m_staring = $('#m_staring').val();
+              var m_opening = $('#m_opening').val();
+
+              // encodeURIComponent로 인코딩 합시당.
+                // 이걸로 인코딩하는 이유는 배웠었는데 까먹었다.. 검색해봐야지.
+
+              m_title = encodeURIComponent(m_title);
+              m_director = encodeURIComponent(m_director);
+              m_genre = encodeURIComponent(m_genre);
+              m_staring = encodeURIComponent(m_staring);
+              m_opening = encodeURIComponent(m_opening);
+
+              googleQRUrl = "https://chart.googleapis.com/chart?chs=177x177&cht=qr&chl=";
+                $('#qrcode').attr('src', googleQRUrl + "제목:" + m_title + "/ 감독:" + m_director + "/ 장르:" + m_genre + "/ 출연:" + m_staring + "/ 개봉날짜:" + m_opening +'&choe=UTF-8');
+           });
+	});
+
+    </script>
+    <title>Title</title>
+</head>
+<body>
+<!--    <div>-->
+<!--        <label>제목</label><p>-->
+<!--        <input id ="m_title"></input><p>-->
+<!--        <label>감독</label><p>-->
+<!--        <input id ="m_director"></input><p>-->
+<!--        <label>장르</label><p>-->
+<!--        <input id ="m_genre"></input><p>-->
+<!--        <label>출연</label><p>-->
+<!--        <input id ="m_staring"></input><p>-->
+<!--        <label>개봉날짜</label><p>-->
+<!--        <input type="text" id ="m_opening"></input><p>-->
+<!--	</div>-->
+<!--	<div>-->
+<!--        <button id="createBtn">create</button>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--	    <img id="qrcode" src='' />-->
+<!--	</div>-->
+<div id="input"><input type="text"><div id="span"><span>H1: </span></div><div id="chk1"><input type="checkbox"><span>PASS</span><input type="checkbox"><span>FAIL</span></div>
+
+</div>
+</body>
+</html>

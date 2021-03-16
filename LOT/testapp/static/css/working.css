@@ -1,0 +1,19 @@
+@media all and ( max-width: 800px ) {
+#이전버튼{
+    float:left;
+    width:50%;
+    text-align:left;
+}
+#다음버튼{
+    float:left;
+    width:50%;
+    text-align:right;
+}
+img{
+    width:100%;
+}
+
+
+
+
+}

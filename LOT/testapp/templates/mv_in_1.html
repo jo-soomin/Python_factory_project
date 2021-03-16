@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/mv_in_1.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+            $("#btn1").click(function(){
+                $("#hide").toggle();
+            });
+            $("#close").click(function(){
+                $("#hide").toggle();
+            });
+
+        $('#LOT').focus();
+        $('#LOT').keydown(function (key) {
+
+            if(key.keyCode == 13){
+                var lot = document.getElementById('LOT').value
+                $.ajax({
+                    url : 'test2',
+                    data : {'LOT_NO':lot},
+                    success:function(data){
+                        document.getElementById('CMP_NM').value = data[0]
+                        document.getElementById('PKG').value = data[1]
+                        document.getElementById('SALE_CD').value = data[2]
+                        document.getElementById('RUN_NO').value = data[3]
+                        document.getElementById('CURR_QTY').value = data[4]
+                        document.getElementById('working').disabled=false;
+
+                    },
+                    error:function(error){
+                        alert("LOT NO를 확인해주세요.")
+                        document.getElementById('LOT').value = ''
+                        document.getElementById('CMP_NM').value = ''
+                        document.getElementById('PKG').value = ''
+                        document.getElementById('SALE_CD').value = ''
+                        document.getElementById('RUN_NO').value = ''
+                        document.getElementById('CURR_QTY').value = ''
+                        document.getElementById('working').disabled = true
+                        $('#LOT').focus();
+                    }
+                });
+            }
+        });
+    });
+
+</script>
+<body>
+    <form action="mv_in_2" method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">LOT</span>
+        </div>
+            <input type="text" class="form-control" aria-describedby="basic-addon1" id="LOT" name="LOT_NO" placeholder="LOT 넘버를 입력해주세요.">
+        </div>
+        <div id="content">
+                <div class="input-group mb-3" id="input_group_div_1">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon6">CMP_NM</span>
+              </div>
+              <input type="text" class="form-control" aria-describedby="basic-addon6" id="CMP_NM" name="CMP_NM">
+                    <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon2">PKG</span>
+              </div>
+              <input type="text" class="form-control" aria-describedby="basic-addon2" id="PKG" name="PKG">
+            </div>
+
+            <div class="input-group mb-3" id="input_group_div_2">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">SALE_CD</span>
+              </div>
+              <input type="text" class="form-control" aria-describedby="basic-addon3" id="SALE_CD" name="SALE_CD">
+            </div>
+            <div class="input-group mb-3" id="input_group_div_3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon4">RUN_NO</span>
+              </div>
+              <input type="text" class="form-control" aria-describedby="basic-addon4" id="RUN_NO" name="RUN_NO">
+                <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon5">CURR_QTY</span>
+              </div>
+              <input type="text" class="form-control" aria-describedby="basic-addon5" id="CURR_QTY" name="CURR_QTY">
+            </div>
+            <div id="btn"><button type="submit" class="btn btn-outline-dark" value="작업시작" id="working" disabled>next</button></div>
+        </div>
+    </form>
+
+
+
+
+<!--    <div>-->
+<!--        <form method="POST" action="insertTest" enctype="multipart/form-data" >-->
+<!--        {% csrf_token %}-->
+<!--            <input type="file" name="imgs" multiple required>-->
+<!--            <input type="submit" value="테스트">-->
+<!--        </form>-->
+    </div>
+    <div>
+        <button onclick="location.href='dropdownList'">dropdown</button>
+    </div>
+    <div>
+        <button onclick="location.href='slideList'">slideList</button>
+    </div>
+    <div>
+        <button onclick="location.href='QRcode'">QRcode</button>
+    </div>
+    <div>
+        <button onclick="location.href='CCS'">CCS</button>
+    </div>
+    <div>
+        <button onclick="location.href='test'">test</button>
+    </div>
+
+</body>
+</html>

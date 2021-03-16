@@ -1,0 +1,109 @@
+@media all and ( max-width: 800px ) {
+
+#write_div{
+    width:100%;
+    float:left;
+}
+#입력{
+    width:70%;
+    margin-left: 15%;
+}
+
+#table_div{
+    width:100%;
+    height:360px;
+    overflow:auto;
+    font-size: 3.0vw;
+    text-align:center;
+}
+
+#이전버튼{
+    width:30%;
+    height:auto;
+    font-size:2.0vw
+}
+th{
+    width:10%;
+}
+#cnt_div{
+    text-align:center;
+    width:50%;
+    display:none;
+}
+#불량{
+    text-align:center;
+    border: 1px solid;
+}
+#불량리스트_div{
+    margin-top: 10%;
+}
+#확인버튼{
+    width:30%;
+    height:auto;
+    font-size:2.0vw;
+}
+#이전버튼_div{
+    width:50%;
+    float:left;
+    text-align:left;
+}
+#완료버튼_div{
+    width:50%;
+    float:left;
+    text-align:right;
+}
+
+#total_cnt{
+    display:none;
+}
+
+#hide{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.68);
+    z-index: 9999;
+    display: none;
+}
+#close{
+    position: fixed;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    width:50px;
+    height:50px;
+    background: none;
+    border:solid white;
+    border-radius: 50%;
+    color:white;
+    font-size: 150%;
+}
+
+#notice_box{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    max-height: 80%;
+    padding: 16px;
+    background: white;
+    z-index: 10000;
+    border-radius: 10px;
+    width: 360px;
+    text-align: center;
+    font-size: large;
+}
+
+#notice_btn{
+    background-color:#ecf0f1;
+    border:none;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
+}
+}
+
+

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/movein_3.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+        function post_page(){
+               history.go(-1);
+        }
+    $(document).ready(function(){
+        $("#popup").click(function(){
+            $("#hide").toggle();
+            $("#불량수_div").hide();
+            $("#불량코드").focus();
+        });
+        $("#close").click(function(){
+            $("#hide").toggle();
+        });
+        $("#select").on("change", function(){
+            $("#불량수_div").hide();
+            if(this.value == '직접입력'){
+                $("#불량코드").val('');
+                $("#불량코드").attr("readonly",false);
+                $("#불량코드").focus();
+            }else{
+                $("#불량코드").val(this.value);
+                $("#불량코드").attr("readonly",true);
+                $("#불량코드").focus();
+            }
+        });
+         $("#불량코드").keydown(function (key) {
+           if(key.keyCode == 13){
+               var write = document.getElementById('불량코드').value
+               var cnt = 0
+                for(var i =0; i<document.getElementsByClassName('불량_opt_class').length; i++){
+                   if(write == document.getElementsByClassName('불량_opt_class')[i].value){
+                       cnt = cnt +1
+                   }
+                }
+                if(cnt > 0 ){
+                   $("#불량수_div").show();
+                   $("#불량수").focus();
+                }else{
+                   alert("불량코드를 확인해주세요.");
+                }
+           }
+        });
+        $("#불량수").keydown(function (key) {
+            if(key.keyCode == 13){
+            if(document.getElementById('불량수').value != '' && document.getElementById('불량수').value != 0){
+                    $("#불량리스트_div").append($("<div class='불량'>"+"불량코드: "+document.getElementById('불량코드').value+", 개수:"+document.getElementById('불량수').value+"</div>"));
+                    document.getElementById('Total_불량수').value = Number(document.getElementById('Total_불량수').value) + Number(document.getElementById('불량수').value)
+                    var total_cnt = document.getElementById('Total_불량수').value
+                     $.ajax({
+                    url : 'total_cnt',
+                    data : {'total_cnt':total_cnt},
+                    success:function(data){
+                        $("#hide").hide();
+                        $("#불량코드").val('');
+                        $("#불량수").val('');
+                        $("#select option:eq(0)").prop("selected", true);
+                        $("#불량코드").attr("readonly",false);
+                    },
+                    error:function(error){
+                        alert('total cnt 통신에러');
+                    }
+                });
+                }
+                else{
+                    alert('불량 수량을 작성해 주세요.')
+                }
+            }
+        });
+    });
+
+</script>
+</head>
+<body>
+    <input type="text" id="Total_불량수">
+    <button id="popup" type="button" class="btn btn-secondary">불량추가하기</button>
+    <div id="불량리스트_div">
+
+    </div>
+
+    <div id="hide">
+        <button id="close" type="button">
+            x
+        </button>
+        <div id="notice_box">
+            <div id="불량코드_div">
+                <input type="text" id="불량코드" >
+            </div>
+            <select name="se" id="select" class="form-control" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+                <option value="직접입력" class="불량_opt_class">직접입력</option>
+                {% for data in data %}
+                <option value="{{data.LT_CD}}" class="불량_opt_class">{{data.LT_AL_NM}}</option>
+                {% endfor %}
+            </select>
+            <div id="불량수_div">
+                <span>불량수 : </span><input type="text" id="불량수">
+            </div>
+        </div>
+    </div>
+    <div id="버튼그룹_div">
+        <div id="이전버튼_div">
+            <button type="button" class="btn btn-outline-dark" onclick="post_page();" id="이전버튼">이전</button>
+        </div>
+        <div id="제출버튼_div">
+            <button type="button" class="btn btn-outline-dark" onclick="location.href='confirm'" id="제출버튼" >제출</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/moveout.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+        function post_page(){
+               history.go(-1);
+        }
+    $(document).ready(function(){
+          $(".ibmburger").click(function(){
+            $("#submenu").toggle();
+        });
+        var burgerMenu = document.querySelector(".ibmburger");
+        burgerMenu.onclick = function() {
+            if (burgerMenu.classList.contains("close")) {
+                document.getElementById("close-menu").beginElement();
+                burgerMenu.classList.remove("close");
+            }else {
+                document.getElementById("open-menu").beginElement();
+                burgerMenu.classList.add("close");
+            }
+        }
+
+         $("#form").submit(function(){
+            if($("#hide").is(":visible")){
+                return false;
+             }else{
+                return true;
+             }
+        });
+        var ls_emp_no = document.getElementById('EMP_NO').value
+
+        $('#EMP_NO').focus();
+        $('#EMP_NO').keydown(function (key){
+            if(key.keyCode == 13){
+                $.ajax({
+                        url : 'emp_chk',
+                        async: false,
+                        data: {'emp_no' :document.getElementById('EMP_NO').value},
+                                success:function(data){
+                                    if(data == null){
+                                        document.getElementById("EMP_NO").value='';
+                                        ls_emp_no = ''
+                                        alert('입력하신 사번이 존재하지 않습니다.');
+                                        $('#LOT_NO').attr('disabled', true);
+                                    }else{
+                                        ls_emp_no = document.getElementById('EMP_NO').value
+                                        $('#LOT_NO').attr('disabled',false);
+                                        $('#LOT_NO').focus();
+                                    }
+                                },
+                                error:function(error){
+                                    document.getElementById("EMP_NO").value='';
+                                    alert('EMP NO Ajax 통신 오류');
+                                }
+                        });
+            }
+         });
+
+         $('#LOT_NO').keydown(function (key) {
+            if(key.keyCode == 13){
+                var ls_lot_no = document.getElementById("LOT_NO").value
+
+                $.ajax({
+                    url : 'lot_select',
+                    async: false,
+                    data : {'LOT_NO':ls_lot_no},
+                    success:function(data){
+                        if(data==null){
+                            alert('LOT NO를 조회할 수 없습니다.');
+                            document.getElementById("LOT_NO").value='';
+                            $("#불량추가_btn").hide();
+                            $("#완료_btn").attr('disabled',true);
+                        }else{
+                            ls_pra_cd = data[1]
+                            ls_cmp_cd = data[2]
+
+                            if(ls_cmp_cd == '002023'){
+                                if(ls_pra_cd == 'A005' || ls_pra_cd == 'A010'){
+                                    alert('STM 고객은 해당 공정에서 LOSS 진행 불가 입니다. 완료 진행하세요.')
+                                    $("#불량추가_btn").hide();
+                                    $("#완료_btn").attr('disabled',false);
+                                };
+                            }else{
+                                $("#불량추가_btn").show();
+                                $("#완료_btn").attr('disabled',false);
+                            };
+
+                        }
+
+                        if(data[1]== 'A010'){
+                            
+                            if(data[11]=='PFMI'){
+                                alert('Saw 공정의 Move OUT 작업은 PC에서 해주시길 바랍니다.')
+                                location.href='moveout'
+                                return false;
+                            }
+                        }
+                    },
+                    error:function(error){
+                        document.getElementById("LOT_NO").value='';
+                        $("#불량추가_btn").hide();
+                        $("#완료_btn").attr('disabled',true);
+                        alert('1.LOT NO Ajax 통신오류');
+                        return false;
+                    }
+                 });
+
+                 $.ajax({
+                    url : 'move_out_check',
+                    async: false,
+                    data : {'LOT_NO':ls_lot_no},
+                    success:function(data){
+                        if(data!=''){
+                            alert(data.error_message);
+                            document.getElementById("LOT_NO").value='';
+                            $("#불량추가_btn").hide();
+                            $("#완료_btn").attr('disabled',true);
+                        }
+                    },
+                    error:function(error){
+                        document.getElementById("LOT_NO").value='';
+                        $("#불량추가_btn").hide();
+                        $("#완료_btn").attr('disabled',true);
+                        alert('2.LOT NO Ajax 통신오류');
+                        return false;
+                    }
+                 });
+            }
+         });
+
+        $("#불량추가_btn").click(function(){
+            $("#hide").toggle();
+            $("#불량수_div").hide();
+            $("#불량코드").focus();
+        });
+        $("#close").click(function(){
+            $("#hide").toggle();
+        });
+        $("#select").on("change", function(){
+            $("#불량수_div").hide();
+            if(this.value == '직접입력'){
+                $("#불량코드").val('');
+                $("#불량코드").attr("readonly",false);
+                $("#불량코드").focus();
+            }else{
+                $("#불량코드").val(this.value);
+                $("#불량코드").attr("readonly",true);
+                $("#불량코드").focus();
+            }
+        });
+         $("#불량코드").keydown(function (key) {
+           if(key.keyCode == 13){
+               document.getElementById('불량코드').value =document.getElementById('불량코드').value.toUpperCase()
+               var write = document.getElementById('불량코드').value
+               var cnt = 0
+                for(var i =0; i<document.getElementsByClassName('불량_opt_class').length; i++){
+                   if(write.toUpperCase() == document.getElementsByClassName('불량_opt_class')[i].value){
+                       cnt = cnt +1
+                   }
+                }
+                if(cnt > 0 ){
+                   $("#불량수_div").show();
+                   $("#불량수").focus();
+                }else{
+                   alert("불량코드를 확인해주세요.");
+                   document.getElementById('불량코드').value = ''
+                }
+           }
+        });
+        $("#불량수").keydown(function (key) {
+            if(key.keyCode == 13){
+            if(document.getElementById('불량수').value != '' && document.getElementById('불량수').value != 0){
+                    $("#불량리스트_div").append($("<div class='불량'>\
+                    <div class='LOSS_CD_div' style='width:50%; height:30px; float:left;'>\
+                        <div style='width:40%; height:30px; float:left;'>불량코드:</div>\
+                            <input type='text' class='LOSS_CD_class' name='LOSS_CD' style='width:60%; height:30px; float:left;' value="+document.getElementById('불량코드').value+" readonly>"+"\
+                         </div>\
+                    <div class='LOSS_CNT_div' style='width:50%; height:30px; float:left;'>\
+                        <div style='width:40%; height:30px; float:left;'>LOT_NO:</div>\
+                            <input type='text' class='LOSS_CNT_class' name='LOSS_CNT' style='width:60%; height:30px; float:left;' value="+document.getElementById('불량수').value+" readonly>"+"\
+                        </div>\
+                    </div>"));
+
+                    document.getElementById('Total_불량수').value = Number(document.getElementById('Total_불량수').value) + Number(document.getElementById('불량수').value)
+                    var total_cnt = document.getElementById('Total_불량수').value
+                     $.ajax({
+                    url : 'total_cnt',
+                    async: false,
+                    data : {'total_cnt':total_cnt},
+                    success:function(data){
+                        $("#hide").hide();
+                        $("#불량코드").val('');
+                        $("#불량수").val('');
+                        $("#select option:eq(0)").prop("selected", true);
+                        $("#불량코드").attr("readonly",false);
+                    },
+                    error:function(error){
+                        alert('total cnt 통신에러');
+                    }
+                });
+                }
+                else{
+                    alert('불량 수량을 작성해 주세요.')
+                }
+            }
+        });
+       $("#완료_btn").click(function(){
+            var LOSS_CD_arr = new Array();
+            var LOSS_CNT_arr = new Array();
+
+            for( var i =0; i<document.getElementsByName('LOSS_CNT').length; i++){
+                LOSS_CNT_arr.push(document.getElementsByName('LOSS_CNT')[i].value);
+                LOSS_CD_arr.push(document.getElementsByName('LOSS_CD')[i].value);
+            }
+            $.ajax({
+                    url : 'lot_select_2',
+                    async: false,
+                    traditional: true,
+                    data : {'LOT_NO':document.getElementById('LOT_NO').value,
+                            'EMP_NO':document.getElementById('EMP_NO').value,
+                            'total_cnt':document.getElementById('Total_불량수').value,
+                            'LOSS_CNT_arr':LOSS_CNT_arr,
+                            'LOSS_CD_arr':LOSS_CD_arr
+                    },
+                    success:function(data){
+                        alert('입력성공');
+                        window.location.reload();
+                    },
+                    error:function(error){
+                        console.log(error)
+                        alert('lot_select_2 통신에러');
+                    }
+                });
+        });
+    });
+
+</script>
+<svg class="ibmburger" id="svg-all" width="50" height="50" viewbox="-50 0 200 200">
+  <path id="top-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,70 C 50,70 50,70 100,70">
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,70 C 50,70 50,70 100,70"
+      to="M 0,100 C 0,34.3 100,34.3 100,100"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="open-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,100 C 0,34.3 100,34.3 100,100"
+      to="M 0,70 C 50,70 50,70 100,70"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="close-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+  <path id="bot-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,130 C 50,130 50,130 100,130">
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,130 C 50,130 50,130 100,130"
+      to="M 0,100 C 0,165.7 100,165.7 100,100"
+      dur="250ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,100 C 0,165.7 100,165.7 100,100"
+      to="M 0,130 C 50,130 50,130 100,130"
+      dur="250ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-1" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+      <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-2" fill="transparent" stroke="#ffffff" stroke-width="0" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="0"
+      to="8"
+      dur="1ms"
+      begin="open-menu.begin + 99ms"
+      fill="freeze"></animate>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="-45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="-45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="8"
+      to="0"
+      dur="1ms"
+      begin="close-menu.begin + 150ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+</svg>
+<div id="title">MoveOut</div>
+<body>
+    <div id="submenu">
+        <div id="hoverlist">
+            <ul>
+                <li><a href="movein_1">movein</a></li>
+                <li><a href="moveout">moveout</a></li>
+                <li><a href="ccs">ccs</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="main_div">
+        <form action="lot_select_2" method="post" id="form">
+        {% csrf_token %}
+            <input type="hidden" id="Total_불량수" name="Total_cnt">
+            <div id="입력_div">
+                <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">사번</span>
+                        </div>
+                        <input type="text" class="form-control" id="EMP_NO" name="EMP_NO">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" >LOT NO</span>
+                        </div>
+                        <input type="text" class="form-control" id="LOT_NO" name="LOT_NO" disabled>
+                </div>
+            </div>
+            <button id="불량추가_btn" type="button" class="btn btn-secondary">불량추가하기</button>
+            <div id="불량리스트_div">
+
+            </div>
+            <div id="hide">
+                <button id="close" type="button">
+                    x
+                </button>
+                <div id="notice_box">
+                    <div id="불량코드_div">
+                        <input type="text" id="불량코드">
+                    </div>
+                    <select name="se" id="select" class="form-control" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+                        <option value="직접입력" class="불량_opt_class">직접입력</option>
+                        {% for data in data %}
+                        <option value="{{data.LT_CD}}" class="불량_opt_class">{{data.LT_AL_NM}}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="불량수_div">
+                        <span>불량수 : </span><input type="text" id="불량수">
+                    </div>
+                </div>
+            </div>
+            <div id="버튼그룹_div">
+                <div id="이전버튼_div">
+                    <button type="button" class="btn btn-outline-dark" onclick="post_page();" id="이전버튼">이전</button>
+                </div>
+                <div id="완료버튼_div">
+                    <button type="button" class="btn btn-outline-dark" id="완료_btn" disabled>완료</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

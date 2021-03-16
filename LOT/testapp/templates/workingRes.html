@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/workingRes.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script type="text/javascript">
+        function post_page(){
+               history.go(-1);
+        }
+     </script>
+</head>
+<body>
+<div id="content">
+    <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">IN수량</span>
+          </div>
+            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{{in_qty}}">
+        <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon2">불량수량</span>
+            </div>
+             <input type="text" class="form-control" placeholder="수량작성" aria-label="Username" aria-describedby="basic-addon1" value="{{cnt}}">
+    </div>
+    <div class="input-group mb-3" id="up">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">OUT수량</span>
+            </div>
+             <input type="text" class="form-control" placeholder="수량작성" aria-label="Username" aria-describedby="basic-addon1" value="{{out_qty}}">
+    </div>
+</div>
+<div id="버튼그룹">
+    <input type="button" value="post" class="btn btn-outline-dark" onclick="post_page();" id="이전">
+    <input type="button" class="btn btn-outline-dark" value="작업완료" id="완료" onclick="location.href='mv_in_1'">
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/working.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>Title</title>
+    <script type="text/javascript">
+      function post_page(){
+         history.go(-1);
+     }
+    </script>
+</head>
+<body>
+    <img src="{% static 'img\SPD-OW1169(001).JPG' %}">
+    <div id="버튼그룸">
+        <div id="이전버튼">
+            <input type="button" value="post" class="btn btn-outline-dark" onclick="post_page();">
+        </div>
+        <div id="다음버튼">
+            <input type="button" value="next" class="btn btn-outline-dark" onclick="location.href= 'working2'">
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+     $(document).ready(function(){
+      $(".ibmburger").click(function(){
+            $("#submenu").toggle();
+        });
+        var burgerMenu = document.querySelector(".ibmburger");
+        burgerMenu.onclick = function() {
+            if (burgerMenu.classList.contains("close")) {
+                document.getElementById("close-menu").beginElement();
+                burgerMenu.classList.remove("close");
+            }else {
+                document.getElementById("open-menu").beginElement();
+                burgerMenu.classList.add("close");
+            }
+        }
+     });
+</script>
+
+<svg class="ibmburger" id="svg-all" width="50" height="50" viewbox="-50 0 200 200">
+  <path id="top-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,70 C 50,70 50,70 100,70">
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,70 C 50,70 50,70 100,70"
+      to="M 0,100 C 0,34.3 100,34.3 100,100"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="open-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,100 C 0,34.3 100,34.3 100,100"
+      to="M 0,70 C 50,70 50,70 100,70"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="close-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+  <path id="bot-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,130 C 50,130 50,130 100,130">
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,130 C 50,130 50,130 100,130"
+      to="M 0,100 C 0,165.7 100,165.7 100,100"
+      dur="250ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,100 C 0,165.7 100,165.7 100,100"
+      to="M 0,130 C 50,130 50,130 100,130"
+      dur="250ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-1" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+      <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-2" fill="transparent" stroke="#ffffff" stroke-width="0" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="0"
+      to="8"
+      dur="1ms"
+      begin="open-menu.begin + 99ms"
+      fill="freeze"></animate>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="-45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="-45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="8"
+      to="0"
+      dur="1ms"
+      begin="close-menu.begin + 150ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+</svg>
+<div id="title">에스피반도체통신(주)</div>
+<body>
+<div id="submenu">
+        <div id="hoverlist">
+            <ul>
+                  <li><a href="movein_1">movein</a></li>
+                 <li><a href="moveout">moveout</a></li>
+                <li><a href="ccs">ccs</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

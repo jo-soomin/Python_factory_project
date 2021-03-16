@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<head lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MOVE IN 1</title>
+</head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/movein_1.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".ibmburger").click(function(){
+            $("#submenu").toggle();
+        });
+        var burgerMenu = document.querySelector(".ibmburger");
+        burgerMenu.onclick = function() {
+            if (burgerMenu.classList.contains("close")) {
+                document.getElementById("close-menu").beginElement();
+                burgerMenu.classList.remove("close");
+            }else {
+                document.getElementById("open-menu").beginElement();
+                burgerMenu.classList.add("close");
+            }
+        }
+        var ls_emp_no = document.getElementById('EMP_NO').value
+
+        $('#EMP_NO').focus();
+        $('#EMP_NO').keydown(function (key){
+            if(key.keyCode == 13){
+                $.ajax({
+                        url : 'emp_chk',
+                        data: {'emp_no' :document.getElementById('EMP_NO').value},
+                                success:function(data){
+                                    // if(data == null){
+                                    if(!data){
+                                        document.getElementById("EMP_NO").value='';
+                                        ls_emp_no = ''
+                                        alert('입력하신 사번이 존재하지 않습니다.');
+                                    }else{
+                                        ls_emp_no = document.getElementById('EMP_NO').value
+                                        $("#LOT_NO").attr("disabled", false);
+                                        $("#EMP_NO").attr("readonly", true);
+                                        $('#LOT_NO').focus();
+                                    }
+                                },
+                                error:function(error){
+                                    document.getElementById("EMP_NO").value='';
+                                    ls_emp_no = ''
+                                    alert('AJAX 접속 오류...');
+                                }
+                        });
+            }
+
+         });
+
+
+        $('#LOT_NO').keydown(function (key) {
+
+            if(key.keyCode == 13){
+                var ls_emp_no = document.getElementById('EMP_NO').value
+                var ls_lot_no = document.getElementById('LOT_NO').value
+
+                if(ls_emp_no==''){
+                    alert('사원번호를 먼저 입력해 주세요!');
+                    $('#EMP_NO').focus();
+                    return false;
+                }
+
+                $.ajax({
+                    url : 'lot_select',
+                    data : {'LOT_NO':ls_lot_no},
+                    success:function(data){
+                        if(data==null){
+                            document.getElementById("LOT_NO").value='';
+                            alert('LOT NO를 조회할 수 없습니다.');
+                            return false;
+                        }
+
+                        if(data[1]=='A005'){
+                            if(data[11]=='PFMI'){
+                                alert('PDA의 Move Out 프로그램에서 작업을 해주시길 바랍니다.')
+                                location.href='movein_1'
+                                return false;
+                            }else{
+                                // document.getElementById("form").method ="POST";
+                                // document.getElementById("form").action ="P_TM";
+                            }
+                        }else if(data[1]== 'A010'){
+                            
+                            if(data[11]=='PFMO'){
+                                // alert('Saw 공정의 Move IN 작업은 PC에서 해주시길 바랍니다.')
+                                // location.href='movein_1'
+                                // return false;
+                            }
+
+                            if(data[11]=='PFMI'){
+                                alert('Saw 공정의 Move Out 작업은 LOT CARD PC에서 해주시길 바랍니다.')
+                                location.href='movein_1'
+                                return false;
+                            }else{
+                                // document.getElementById("form").method ="POST";
+                                // document.getElementById("form").action ="P_SAW";
+                            }
+
+                        }else{
+                            alert('진행하실 수 없는 공정입니다. ERP를 이용해 주세요.')
+                            location.href='movein_1'
+                            return false;
+                        }
+
+                        var ls_item_cd = data[6]
+                        var ls_pra_cd = data[1]
+                        var ls_sysdate = data[28]
+
+                        // $.ajax({
+                        //         url : 'er_return_chk',
+                        //         data: {'ls_item_cd':ls_item_cd},
+                        //                 success:function(data){
+                        //                     var ls_item_wf_rt = data[0]
+                        //                     var ls_item_type = data[1]
+
+                        //                     if(ls_item_wf_rt =='Y' & ls_item_type == 'RB02' & ls_pra_cd =='A005'){
+
+                        //                         var ls_return_yn = confirm("Wafer Return 하셨습니까?");
+
+                        //                         $.ajax({
+                        //                         url : 'er_return_update',
+                        //                         data: {'return_yn':ls_return_yn,
+                        //                                 'date':ls_sysdate,
+                        //                                 'emp_no' :ls_emp_no,
+                        //                                 'lot_no' :ls_lot_no},
+                        //                                 success:function(data){
+                        //                                     // 성공 처리
+                        //                                 },
+                        //                                 error:function(error){
+                        //                                     alert('E.R Return Wafer Ajax Error.');
+                        //                                     return false;
+                        //                                 }
+                        //                         });
+
+                        //                     }
+                        //                 },
+                        //                 error:function(error){
+                        //                     alert('AJAX 접속 오류...');
+                        //                     return false;
+                        //                 }
+                        //         });
+
+
+                        $('#SALE_CD').val(data[29])
+                        $('#DIE_CD').val(data[4])
+                        $('#ITEM_CD').val(ls_item_cd)
+                        $('#LOT_TYPE_input').val(data[13])
+                        $('#CLOT_NO').val(data[22])
+                        $('#PRA_CD_input').val(ls_pra_cd)
+                        $('#CMP_CD').val(data[2])
+                        $('#ITEM_MCD_input').val(data[25])
+                        $('#RUN_NO').val(data[3])
+                        $('#GUBUN_input').val(data[31])
+                        $('#PLAN_WEEK').val(data[14])
+                        $('#TEST_WEEK_input').val(data[15])
+                        $('#LOT_TNS').val(data[9])
+                        $('#CARR_NO_input').val(data[16])
+                        $('#CURR_QTY').val(data[10])
+
+                        $('#next').attr('disabled', false)
+                        $('#ccs').attr('disabled', false)
+
+                        // 설비 LIST 조회
+                        $.ajax({
+                                url : 'MCN_LIST',
+                                data: {'pra_cd':ls_pra_cd},
+                                        success:function(data){
+                                            // 성공 처리
+                                            for(var i = 0; i < data.length; i++){
+                                                var option = $("<option>"+data[i]+"</option>");
+                                                $('#select').append(option);
+                                            }
+
+                                        },
+                                        error:function(error){
+                                            alert('Ajax Error.');
+                                            return false;
+                                        }
+                                });
+
+                    },
+                    error:function(error){
+                        document.getElementById("LOT_NO").value='';
+                        $('#LOT_NO').focus();
+                        alert("AJAX 접속 오류...")
+                        location.href='movein_1'
+                        return false;
+                    }
+                });
+            }
+        });
+
+        $('#next').click(function (key) {
+            if($('#PRA_CD_input').val()=='A005'){
+                document.getElementById("form").method ="POST";
+                document.getElementById("form").action ="P_TM";
+                $('#form').submit();
+            }else if($('#PRA_CD_input').val()=='A010'){
+                document.getElementById("form").method ="POST";
+                document.getElementById("form").action ="P_SAW";
+                $('#form').submit();
+            }else{
+                alert('해당 공정은 개발중입니다.')
+                location.href='movein_1'
+                return false
+            }
+        });
+    });
+
+</script>
+<svg class="ibmburger" id="svg-all" width="50" height="50" viewbox="-50 0 200 200">
+  <path id="top-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,70 C 50,70 50,70 100,70">
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,70 C 50,70 50,70 100,70"
+      to="M 0,100 C 0,34.3 100,34.3 100,100"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="open-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="d"
+      from="M 0,100 C 0,34.3 100,34.3 100,100"
+      to="M 0,70 C 50,70 50,70 100,70"
+      dur="250ms"
+      begin="indefinite"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"
+      id="close-menu"></animate>
+    <animate
+      xlink:href="#top-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+  <path id="bot-line" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,130 C 50,130 50,130 100,130">
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,130 C 50,130 50,130 100,130"
+      to="M 0,100 C 0,165.7 100,165.7 100,100"
+      dur="250ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="open-menu.begin + 50ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="d"
+      from="M 0,100 C 0,165.7 100,165.7 100,100"
+      to="M 0,130 C 50,130 50,130 100,130"
+      dur="250ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 .1 .3 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#bot-line"
+      attributeName="stroke-width"
+      from="8"
+      to="8"
+      dur="200ms"
+      begin="close-menu.begin + 50ms"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-1" fill="transparent" stroke="#ffffff" stroke-width="8" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+      <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-1"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-1"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+
+  <path id="middle-2" fill="transparent" stroke="#ffffff" stroke-width="0" stroke-miterlimit="100" d="M 0,100 C 50,100 50,100 100,100" transform="rotate(0 0 0)">
+      <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 0,100 C 50,100 50,100 100,100"
+      to="M 25,100 C 50,100 50,100 75,100"
+      dur="100ms"
+      begin="open-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="0"
+      to="8"
+      dur="1ms"
+      begin="open-menu.begin + 99ms"
+      fill="freeze"></animate>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 50 100"
+      to="-45 50 100"
+      dur="250ms"
+      begin="open-menu.begin + 100ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animateTransform>
+    <animateTransform
+      xlink:href="#middle-2"
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="-45 50 100"
+      to="0 50 100"
+      dur="150ms"
+      begin="close-menu.begin + 0ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines=".5 0 1 1"
+      fill="freeze"></animateTransform>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="stroke-width"
+      from="8"
+      to="0"
+      dur="1ms"
+      begin="close-menu.begin + 150ms"
+      fill="freeze"></animate>
+    <animate
+      xlink:href="#middle-2"
+      attributeName="d"
+      from="M 25,100 C 50,100 50,100 75,100"
+      to="M 0,100 C 50,100 50,100 100,100"
+      dur="100ms"
+      begin="close-menu.begin + 150ms"
+      calcMode="spline"
+      keyTimes="0;1"
+      keySplines="0 .6 .3 1"
+      fill="freeze"></animate>
+  </path>
+</svg>
+    <div id="title">
+        MoveIn
+    </div>
+<body>
+    <div id="submenu">
+        <div id="hoverlist">
+            <ul>
+                  <li><a href="movein_1">movein</a></li>
+                 <li><a href="moveout">moveout</a></li>
+                <li><a href="ccs">ccs</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <form action="" method="post" id="form" >
+    {% csrf_token %}
+        <div class="main_div">
+
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">사번</span>
+                </div>
+                <input type="text" class="form-control" id="EMP_NO" name="EMP_NO">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" >LOT NO</span>
+                </div>
+                <input type="text" class="form-control" id="LOT_NO" name="LOT_NO"style="width: 80px;" disabled>
+            </div>
+
+            <div>
+                <span class="input-group-text">설비 번호</span>
+                <select name="MCN_NO" id="select" class="form-control" name='mcn_cd' onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+                </select>
+            </div>
+            <div class="input-group input-group-sm mb-3"></div>
+
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend" >
+                    <span class ="input-group-text" style="margin-bottom: 5px;">영업코드</span>
+                </div>
+                <input type="text" class="form-control" style=" width:125px; height:31px;" id="SALE_CD" readonly>
+
+                <div class="input-group-prepend">
+                    <span class ="input-group-text" style="margin-bottom: 5px;">DIE CD</span>
+                </div>
+                <input type="text" class="form-control" style=" width:80px; height:31px;" id="DIE_CD" readonly>
+
+                <div class="input-group-prepend" style=" margin-bottom: 5px; ">
+                    <span class="input-group-text" >품목코드</span>
+                </div>
+                <input type="text" class="form-control" style="width: 120px; margin-bottom: 5px; " id="ITEM_CD" name="ITEM_CD" readonly>
+                <div class="input-group-prepend" style="margin-bottom: 5px;">
+                    <span class="input-group-text"  id="LOT_TYPE">LOT TYPE</span>
+                </div>
+                <input type="text" class="form-control" style="width: 60px;" id="LOT_TYPE_input" readonly>
+
+                <div class="input-group-prepend" style=" margin-bottom: 5px; ">
+                    <span class="input-group-text" >CLOT NO</span>
+                </div>
+                <input type="text" class="form-control" style="width: 115px; margin-bottom: 5px; " id="CLOT_NO" readonly>
+                <div class="input-group-prepend" style="margin-bottom: 5px;">
+                    <span class="input-group-text"  id="PRA_CD">PRA CD</span>
+                </div>
+                <input type="text" class="form-control" style="width: 64px;" id="PRA_CD_input" name="PRA_CD" readonly>
+
+                <div class="input-group-prepend" style=" margin-bottom: 5px; ">
+                    <span class="input-group-text" >고객명</span>
+                </div>
+                <input type="text" class="form-control" style="width: 120px; margin-bottom: 5px; " id="CMP_CD" name="CMP_CD" readonly>
+                <div class="input-group-prepend" style="margin-bottom: 5px;">
+                    <span class="input-group-text"  id="ITEM_MCD">PKG</span>
+                </div>
+                <input type="text" class="form-control" style="width: 80px;" id="ITEM_MCD_input" readonly>
+
+                <div class="input-group-prepend" style=" margin-bottom: 5px; ">
+                    <span class="input-group-text" >RUN NO</span>
+                </div>
+                <input type="text" class="form-control" style="width: 135px; margin-bottom: 5px; " id="RUN_NO" readonly>
+                <div class="input-group-prepend" style="margin-bottom: 5px;">
+                    <span class="input-group-text"  id="GUBUN">구분</span>
+                </div>
+                <input type="text" class="form-control" style="width: 100px;" id="GUBUN_input" readonly>
+
+                <div class="input-group-prepend" style=" margin-bottom: 5px; ">
+                    <span class="input-group-text" >계획 주코드</span>
+                </div>
+                <input type="text" class="form-control" style="width: 80px; margin-bottom: 5px; " id="PLAN_WEEK" readonly>
+                <div class="input-group-prepend" style="margin-bottom: 5px;">
+                    <span class="input-group-text"  id="TEST_WEEK">TEST 주코드</span>
+                </div>
+                <input type="text" class="form-control" style="width: 70px;" id="TEST_WEEK_input" readonly>
+
+                <div class="input-group-prepend" style=" margin-bottom: 5px; ">
+                    <span class="input-group-text" >순번</span>
+                </div>
+                <input type="text" class="form-control" style="width: 130px; margin-bottom: 5px; " id="LOT_TNS" name="LOT_CNT" readonly>
+                <div class="input-group-prepend" style="margin-bottom: 5px;">
+                    <span class="input-group-text"  id="CARR_NO">CARR NO</span>
+                </div>
+                <input type="text" class="form-control" style="width: 90px;" id="CARR_NO_input" readonly>
+
+                <div class="input-group-prepend" >
+                    <span class ="input-group-text" style="margin-bottom: 5px;">현재 수량</span>
+                </div>
+                <input type="text" class="form-control" style=" width:100px; height:31px;" id="CURR_QTY" readonly>
+
+            </div>
+
+
+        <div id="ccs_btn_div">
+            <button type="button" class="btn btn-outline-dark"id="ccs" onclick="location.href='ccs'" disabled>ccs</button>
+        </div>
+        <div id="next_btn_div">
+            <button type="button" class="btn btn-outline-dark"id="next" disabled>next</button>
+        </div>
+    </div>
+    </form>
+
+
+</body>
+</html>

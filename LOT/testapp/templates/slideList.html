@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .div_class2 {
+        display:none;
+    }
+    .div_class3 {
+        display:none;
+    }
+    .div_class4 {
+        display:none;
+    }
+    .div_class5 {
+        display:none;
+    }
+    .input{
+        width:30%;
+    }
+
+    input[type="text"]{
+        border:none;
+    }
+    body{
+    }
+}
+
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    function back(){
+        history.go(-1);
+    }
+    $(document).ready(function(){
+        document.getElementById('input_1').focus();
+        $('#te').mouseover(function(){
+            $('#te').css('cursor', 'pointer');
+        });
+      $("#te").click(function(obj){
+        $('.div_class1').slideToggle(200);
+       });
+      $("#te2").click(function(obj){
+        $('.div_class2').slideToggle(200);
+       });
+    $("#te3").click(function(obj){
+        $('.div_class3').slideToggle(200);
+       });
+    $("#te4").click(function(obj){
+        $('.div_class4').slideToggle(200);
+       });
+    $("#te5").click(function(obj){
+        $('.div_class5').slideToggle(200);
+       });
+    $("#input_1").keydown(function (key) {
+           if(key.keyCode == 13){
+                document.getElementById('input_01').focus();
+           }
+       });
+    $("#input_01").keydown(function (key) {
+          if(key.keyCode == 13){
+               document.getElementById('input_02').focus();
+          }
+      });
+    $("#input_02").keydown(function (key) {
+          if(key.keyCode == 13){
+               document.getElementById('input_03').focus();
+          }
+      });
+    $("#input_03").keydown(function (key) {
+          if(key.keyCode == 13){
+               document.getElementById('input_04').focus();
+          }
+      });
+    $("#input_04").keydown(function (key) {
+          if(key.keyCode == 13){
+               document.getElementById('input1').focus();
+          }
+      });
+
+    $("#input1").keydown(function (key) {
+           if(key.keyCode == 13){
+                $('.div_class1').slideUp(200);
+                $('.div_class2').slideDown(200);
+                document.getElementById('input_2').focus();
+           }
+       });
+    $("#input2").keydown(function (key) {
+           if(key.keyCode == 13){
+                $('.div_class2').slideUp(200);
+                $('.div_class3').slideDown(200);
+                document.getElementById('input_3').focus();
+           }
+       });
+    });
+</script>
+<body>
+<div id="te">
+    1.점검항목
+</div>
+<ul class="div_class1">
+        <li>
+            <input type="text" value="Wire Lot No 기록 한다" readonly ><br>
+            LOT NO <span>H1:</span><input class="input" id="input_1" ><span>H2:</span><input class="input" id="input_01">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Wedge S/N 기록 한다" readonly><br>
+            S/N <span>H1:</span><input class="input" id="input_02"><span>H2:</span><input class="input" id="input_03">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Generator Frequency 값을 기록(58이상)" class="in"><br>
+            TYPE <span>H1:</span><input class="input" id="input_04"><span>H2:</span><input class="input" id="input1">
+        </li>
+
+    </ul>
+<div id="te2">
+     2.점검항목
+</div>
+<ul class="div_class2">
+        <li>
+            <input type="text" value="Wire Lot No 기록 한다" readonly><br>
+            LOT NO <span>H1:</span><input class="input" id="input_2"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Wedge S/N 기록 한다" readonly><br>
+            S/N <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Generator Frequency 값을 기록(58이상)" readonly><br>
+            TYPE <span>H1:</span><input class="input"><span>H2:</span><input class="input" id="input2">
+        </li>
+</ul><div id="te3">
+     3.점검항목
+</div>
+<ul class="div_class3">
+        <li>
+            <input type="text" value="Wire Lot No 기록 한다" readonly><br>
+            LOT NO <span>H1:</span><input class="input" id="input_3"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Wedge S/N 기록 한다"><br>
+            S/N <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Generator Frequency 값을 기록(58이상)"><br>
+            TYPE <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+</ul><div id="te4">
+     4.점검항목
+</div>
+<ul class="div_class4">
+        <li>
+            <input type="text" value="Wire Lot No 기록 한다"><br>
+            LOT NO <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Wedge S/N 기록 한다"><br>
+            S/N <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Generator Frequency 값을 기록(58이상)"><br>
+            TYPE <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+</ul><div id="te5">
+     5.점검항목
+</div>
+<ul class="div_class5">
+        <li>
+            <input type="text" value="Wire Lot No 기록 한다"><br>
+            LOT NO <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Wedge S/N 기록 한다"><br>
+            S/N <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+    <br>
+        <li>
+            <input type="text" value="Generator Frequency 값을 기록(58이상)"><br>
+            TYPE <span>H1:</span><input class="input"><span>H2:</span><input class="input">
+        </li>
+</ul>
+<!--<div class="topMenu">-->
+<!--    <ul class="dept01">-->
+<!--        <li>-->
+<!--            <span>MENU1</span>-->
+<!--            <ul class="dept02">-->
+<!--                <li>-->
+<!--                    하위메뉴1-->
+<!--                </li>-->
+<!--                <input type="text">-->
+<!--            </ul>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <span>MENU2</span>-->
+<!--            <ul class="dept03">-->
+<!--                <li>-->
+<!--                    하위메뉴1-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </li>-->
+<!--    </ul>-->
+<!--</div>-->
+<!--<div>d</div>-->
+<div>
+    <button onclick="back();">뒤로가기</button>
+</div>
+
+</body>
+</html>

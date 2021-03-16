@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mv_in_3.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+        function post_page(){
+               history.go(-1);
+        }
+    $(document).ready(function(){
+        $('#write').focus();
+
+          $("#write").keydown(function (key) {
+            if(key.keyCode == 13){
+                var write = document.getElementById('write').value
+                var cnt = 0
+                 for(var i =0; i<document.getElementsByClassName('LT_CD').length; i++){
+                    if(write == document.getElementsByClassName('LT_CD')[i].innerText){
+                        cnt = cnt +1
+                    }
+                 }
+                 if(cnt > 0 ){
+                    document.getElementById('cnt_div').style.display = 'flex'
+                    document.getElementById('cnt_write').focus()
+                 }else{
+                    alert('불량코드 없음')
+                 }
+            }
+        });
+
+        $("#cnt_write").keydown(function (key) {
+            if(key.keyCode == 13){
+            if(document.getElementById('cnt_write').value != '' && document.getElementById('cnt_write').value != 0){
+                    $("#불량리스트_div").append($("<div id='불량'>"+"불량명: "+document.getElementById('write').value+" 개수:"+document.getElementById('cnt_write').value+"</div>"));
+                    document.getElementById('total_cnt').value = Number(document.getElementById('total_cnt').value) + Number(document.getElementById('cnt_write').value)
+                    var total_cnt = document.getElementById('total_cnt').value
+                     $.ajax({
+                    url : 'total_cnt',
+                    data : {cnt:total_cnt},
+                    success:function(data){
+                    },
+                });
+                    document.getElementById('cnt_div').style.display = 'none'
+                    document.getElementById('write').value = ''
+                    document.getElementById('cnt_write').value = ''
+                    document.getElementById('write').focus()
+                }
+                else{
+                    alert('불량 수량을 작성해 주세요.')
+                }
+            }
+        });
+       $(".LT_CD").click(function(obj){
+            document.getElementById('write').value = obj.currentTarget.innerText
+            document.getElementById('write').focus()
+            obj.currentTarget.style.backgroundColor ='yellow'
+       });
+       $(".LT_CD").dblclick(function(obj){
+            document.getElementById('write').value = ''
+            obj.currentTarget.style.backgroundColor ='white'
+       });
+    });
+
+
+</script>
+</head>
+<body>
+  <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">입력</span>
+      </div>
+      <input type="text" class="form-control" placeholder="불량코드를 입력해주세요." aria-label="Username" aria-describedby="basic-addon1" id="write">
+      <div id="cnt_div">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon2">수량</span>
+      </div>
+      <input type="text" class="form-control" placeholder="수량작성" aria-label="Username" aria-describedby="basic-addon1" id="cnt_write">
+          </div>
+  </div>
+  <input type="text" id="total_cnt">
+
+  <div id="table_div">
+      <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">불량코드</th>
+          <th scope="col">불량명</th>
+        </tr>
+      </thead>
+      <tbody>
+       {% for data in data %}
+        <tr>
+          <td class="LT_CD">
+              {{data.LT_CD}}
+          </td>
+          <td>
+              {{data.LT_AL_NM}}
+          </td>
+        </tr>
+         {% endfor %}
+      </tbody>
+    </table>
+  </div>
+<div id="불량리스트_div">
+
+</div>
+  <div id="버튼그룹_div">
+    <div id="이전버튼_div">
+        <button type="button" class="btn btn-outline-dark" onclick="post_page();" id="이전버튼">post</button>
+    </div>
+    <div id="완료버튼_div">
+        <button type="button" class="btn btn-outline-dark" onclick="location.href='confirm'" id="확인버튼" >제출</button>
+    </div>
+  </div>
+</body>
+</html>

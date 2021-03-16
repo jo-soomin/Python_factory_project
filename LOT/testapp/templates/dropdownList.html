@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #select{
+            width:60%;
+            float:left;
+        }
+        #직접입력_input{
+            float:left;
+            width:40%;
+            height:34px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        function back(){
+            history.go(-1);
+        }
+        $(document).ready(function(){
+        $('#직접입력_input').focus();
+            $("#select").change(function(){
+                if($(this).val()=='직접입력'){
+                   $('#직접입력_input').val('');
+                   $('#직접입력_input').attr("readonly",false);
+                   $('#직접입력_input').focus();
+                }else{
+                   $('#직접입력_input').val($(this).val());
+                    $('#직접입력_input').attr("readonly",true);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="wrapper">
+        <input type="text" id="직접입력_input">
+        <select name="" id="select" class="form-control" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+            <option value="직접입력">직접입력</option>
+            {% for data in data %}
+                <option value="{{data.CMP_CD}}">{{data.CMP_NM}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+</body>
+</html>
